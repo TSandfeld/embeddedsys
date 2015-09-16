@@ -6,16 +6,19 @@
 C_SRCS += \
 ../filters.c \
 ../main.c \
+../peaksearch.c \
 ../sensor.c 
 
 OBJS += \
 ./filters.o \
 ./main.o \
+./peaksearch.o \
 ./sensor.o 
 
 C_DEPS += \
 ./filters.d \
 ./main.d \
+./peaksearch.d \
 ./sensor.d 
 
 

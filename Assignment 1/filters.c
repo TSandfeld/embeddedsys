@@ -9,19 +9,19 @@ int highPassFilter(int xArr[], int yArr[]) {
 	return y;
 }
 
-int derPassFilter(int xArr[], int yArr[]) {
+int derPassFilter(int xArr[]) {
 	int y = (2*xArr[0]+xArr[1]-xArr[3]-2*xArr[4])/8;
 	return y;
 }
 
-int sqrPassFilter(int xArr[], int yArr[]) {
-	int y = xArr[0]*xArr[0];
+int sqrPassFilter(int xArr) {
+	int y = xArr*xArr;
 	return y;
 }
 
-int mwiPassFilter(int xArr[], int yArr[]) {
+int mwiPassFilter(int xArr[]) {
 	int y;
-	for(int i = 0; i<sizeof(xArr); i++) {
+	for(int i = 0; i<31; i++) {
 		y += xArr[i];
 	}
 	return y/30;
