@@ -1,1 +1,0 @@
-peaksearch.d: ../peaksearch.c

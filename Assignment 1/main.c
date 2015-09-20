@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include "sensor.h"
 #include "filters.h"
+#include "peaksearch.h"
 void shiftRight();
+void shiftAll();
 
 int xRaw[13] = {0};
 int xLow[33] = {0};
@@ -52,9 +54,4 @@ void shiftAll() {
 	shiftRight(xSqr,30);
 	shiftRight(xPeak,2);
 }
-
-
-
-
-
 
