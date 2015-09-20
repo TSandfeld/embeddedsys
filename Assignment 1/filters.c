@@ -1,5 +1,10 @@
 
 int lowPassFilter(int xArr[], int yArr[]){
+	int y1 = yArr[1];
+	int y2 = yArr[2];
+	int x0 = xArr[0];
+	int x6 = xArr[6];
+	int x12 = xArr[12];
 	int y = 2*yArr[1]-yArr[2] + (xArr[0]-2*xArr[6]+xArr[12])/32;
 	return y;
 }
@@ -20,7 +25,7 @@ int sqrPassFilter(int xArr) {
 }
 
 int mwiPassFilter(int xArr[]) {
-	int y;
+	int y = 0;
 	for(int i = 0; i<31; i++) {
 		y += xArr[i];
 	}

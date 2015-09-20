@@ -13,7 +13,7 @@ int debug = 0;
 int PEAKS[200] = {0}; //Valgt ud fra peak-data.
 int RPEAKS[200] = {0};
 int RRCALC[2] = {0};
-int RecentRR[8] = {0}; //husk at shifte!
+int RecentRR[8] = {0};
 int RecentRR_OK[8] = {0};
 int RR_AVERAGE1, RR_AVERAGE2, RR_LOW, RR_HIGH, RR_MISS = 0;
 int SPKF = 3100;
@@ -29,9 +29,8 @@ void findPeak(int array[]) {
 			printf("\nEntering FindPeak with success\n");
 			printf("Plads[0]: %d < plads[1]: %d > plads[2]: %d\n", array[0],array[1],array[2]);
 		}
-		addToPeaks(array[1]);
-		int peak = PEAKS[PeaksCount-1];
-		PeakIndex++;
+		int peak = array[1];
+		addToPeaks(peak);
 		if(peak > THRESHOLD1) {
 			if(debug == 1) {
 			printf("Peak %d > Threshold1 %d\n", peak, THRESHOLD1);
@@ -46,7 +45,7 @@ void findPeak(int array[]) {
 			findThreshold2();
 		}
 	}
-
+	PeakIndex++;
 }
 
 void findThreshold1() {
@@ -94,32 +93,22 @@ void findAVG2() {
 	printf("Ny RR_AVERAGE2 = %d\n", RR_AVERAGE2);
 	}
 }
-void findRRLow(int avg) {
-	if(avg == 1) {
-		RR_LOW = 0.92*RR_AVERAGE1;
-	} else {
-		RR_LOW = 0.92*RR_AVERAGE2;
-	}
+void findRRLow() {
+	RR_LOW = 0.92*RR_AVERAGE2;
+
 	if(debug == 1) {
 	printf("Ny RR_LOW = %d\n", RR_LOW);
 	}
 }
-void findRRHigh(int avg) {
-	if(avg == 1) {
-		RR_HIGH = 1.16*RR_AVERAGE1;
-	} else {
-		RR_HIGH = 1.16*RR_AVERAGE2;
-	}
+void findRRHigh() {
+	RR_HIGH = 1.16*RR_AVERAGE2;
 	if(debug == 1) {
 	printf("Ny RR_HIGH = %d\n", RR_HIGH);
 	}
 }
-void findRRMiss(int avg) {
-	if(avg == 1) {
-		RR_MISS = 1.66*RR_AVERAGE1;
-	} else {
-		RR_MISS = 1.66*RR_AVERAGE2;
-	}
+void findRRMiss() {
+	RR_MISS = 1.66*RR_AVERAGE2;
+
 	if(debug == 1) {
 	printf("Ny RR_MISS = %d\n", RR_MISS);
 	}
@@ -129,7 +118,7 @@ void addToRPeak(int number) { //Efter 200 rpeaks resettes counter, og der sættes
 		RPeaksCount = 0;
 	}
 	RPEAKS[RPeaksCount] = number;
-	printf("Added RPEAK = %d at index = %d\n",number, PeakIndex);
+	printf("At index %d added RPEAK = %d\n", PeakIndex, number);
 	RPeaksCount++;
 	if(debug == 1) {
 	printf("RPeaksCount = %d\n", RPeaksCount);
@@ -145,7 +134,7 @@ void addToPeaks(int number) {
 	printf("PeaksCount = %d\n", PeaksCount);
 	}
 }
-void shiftRecents() {
+void shiftBothRecent() {
 	if(debug == 1) {
 	printf("\nShifting both recents\n");
 	}
@@ -165,9 +154,10 @@ void shiftRecent() { //shifter kun recentRR!!!!
 
 void calcRR(int t1, int t2) {
 	RR = t2-t1;
-	if(RR < 0) {
+	if(RR < 0) { //Tager absolutværdien af intervallet.
 		RR = RR*-1;
 	}
+
 	if(debug == 1) {
 	printf("\nEntering CalcRR\n");
 	printf("RR = %d", RR);
@@ -183,12 +173,12 @@ void calcRR(int t1, int t2) {
 		}
 		RecentRR_OK[0] = RR;
 		RecentRR[0] = RR;
-		shiftRecent();
+		shiftBothRecent();
 		findAVG2();
 		findAVG1();
-		findRRLow(2);
-		findRRHigh(2);
-		findRRMiss(2);
+		findRRLow();
+		findRRHigh();
+		findRRMiss();
 		findThreshold1();
 		findThreshold2();
 	} else if(RR > RR_MISS) {
@@ -202,7 +192,7 @@ void searchBack() {
 	if(debug == 1) {
 	printf("\nEntering SearchBack\n");
 	}
-	for(int i = 4; i > 0; i--) {
+	for(int i = 200; i >= 0; i--) {
 		int peak = PEAKS[i]; //debug purpose
 		int t = THRESHOLD2; //---"---
 		if(peak > t) {
@@ -212,15 +202,17 @@ void searchBack() {
 			RecentRR[0] = RR;
 			shiftRecent();
 			findAVG1();
-			findRRLow(1);
-			findRRHigh(1);
-			findRRMiss(1);
+			findRRLow();
+			findRRHigh();
+			findRRMiss();
 			findThreshold1();
 			findThreshold2();
-			return; //virker desværre ikke særlig godt.
+			break; //virker desværre ikke særlig godt.
 		}
 	}
 	if(debug == 1) {
 	printf("\n");
 	}
 }
+
+

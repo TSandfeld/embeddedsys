@@ -18,25 +18,26 @@ int main(int argc, char *argv[]) {
 	FILE *file = fopen(filename,"r");
 	int flag = 0;
 	while(flag != 1) {
-		flag = getFlag();
 		xRaw[0] = getNextData(file);
-		xLow[0] = lowPassFilter(xRaw,xLow);
-		//printf("%d\n",xLow[0]);
-		xHigh[0] = highPassFilter(xLow,xHigh);
-		//printf("%d\n",xHigh[0]);
-		xDer = derPassFilter(xHigh);
-		//printf("%d\n",xDer);
-		xSqr[0] = sqrPassFilter(xDer);
-		//printf("%d\n",xSqr[0]);
-		xMWI = mwiPassFilter(xSqr);
-		xPeak[0] = xMWI;
-
-		findPeak(xPeak);
-		//printf("%d\n",xMWI);
-		shiftAll();
-
+		flag = getFlag();
+		if(flag == 1) {
+			break;
+		} else {
+			xLow[0] = lowPassFilter(xRaw,xLow);
+			//printf("%d\n",xLow[0]);
+			xHigh[0] = highPassFilter(xLow,xHigh);
+			//printf("%d\n",xHigh[0]);
+			xDer = derPassFilter(xHigh);
+			//printf("%d\n",xDer);
+			xSqr[0] = sqrPassFilter(xDer);
+			//printf("%d\n",xSqr[0]);
+			xMWI = mwiPassFilter(xSqr);
+			//printf("%d\n",xMWI);
+			xPeak[0] = xMWI;
+			findPeak(xPeak);
+			shiftAll();
+		}
 	}
-	//printArray1(xLow);
 	return 0;
 }
 
