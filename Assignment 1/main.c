@@ -2,7 +2,6 @@
 #include "sensor.h"
 #include "filters.h"
 void shiftRight();
-int length();
 
 int xRaw[13] = {0};
 int xLow[33] = {0};
