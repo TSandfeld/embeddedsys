@@ -1,6 +1,5 @@
 #include <stdio.h>
 
-
 void addToPeaks();
 void calcRR();
 void findNPKF();
@@ -35,7 +34,7 @@ void findPeak(int array[]) {
 			if(debug == 1) {
 			printf("Peak %d > Threshold1 %d\n", peak, THRESHOLD1);
 			}
-			RRCALC[0] = peak;
+			RRCALC[0] = PeakIndex;
 			calcRR(RRCALC[0],RRCALC[1]);
 			RRCALC[1] = RRCALC[0];
 			//printf("%d\n", PEAKS[0]);
@@ -154,13 +153,15 @@ void shiftRecent() { //shifter kun recentRR!!!!
 
 void calcRR(int t1, int t2) {
 	RR = t2-t1;
+
 	if(RR < 0) { //Tager absolutværdien af intervallet.
 		RR = RR*-1;
 	}
 
+
 	if(debug == 1) {
 	printf("\nEntering CalcRR\n");
-	printf("RR = %d", RR);
+	printf("RR = %d\n", RR);
 	}
 	if(RR > RR_LOW && RR < RR_HIGH) {
 		if(debug == 1) {
@@ -171,9 +172,9 @@ void calcRR(int t1, int t2) {
 		if(debug == 1) {
 		printf("SPKF = %d\n", SPKF);
 		}
+		shiftBothRecent();
 		RecentRR_OK[0] = RR;
 		RecentRR[0] = RR;
-		shiftBothRecent();
 		findAVG2();
 		findAVG1();
 		findRRLow();
@@ -192,19 +193,26 @@ void searchBack() {
 	if(debug == 1) {
 	printf("\nEntering SearchBack\n");
 	}
-	for(int i = 200; i >= 0; i--) {
+	for(int i = 199; i >= 0; i--) {
 		int peak = PEAKS[i]; //debug purpose
 		int t = THRESHOLD2; //---"---
 		if(peak > t) {
 			addToRPeak(peak);
 			PEAKS[i] = -1; //Peaket skal fjernes fra PEAKS arrayet når den tilføjes til RPeaks arrayet ellers kigges der på den samme hele tiden.
 			SPKF = 0.25*peak+0.75*SPKF;
-			RecentRR[0] = RR;
 			shiftRecent();
+			RecentRR[0] = RR;
 			findAVG1();
+			/*
 			findRRLow();
 			findRRHigh();
 			findRRMiss();
+			*/
+
+			RR_LOW = 0.92*RR_AVERAGE1;
+			RR_HIGH = 1.16*RR_AVERAGE1;
+			RR_MISS = 1.66*RR_AVERAGE1;
+
 			findThreshold1();
 			findThreshold2();
 			break; //virker desværre ikke særlig godt.
