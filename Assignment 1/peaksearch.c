@@ -14,7 +14,9 @@ int RPEAKS[200] = {0};
 int RRCALC[2] = {0};
 int RecentRR[8] = {0};
 int RecentRR_OK[8] = {0};
-int RR_AVERAGE1, RR_AVERAGE2, RR_LOW, RR_HIGH, RR_MISS = 0;
+int RR_AVERAGE1 = 0;
+int RR_AVERAGE2 = 0;
+int RR_LOW, RR_HIGH, RR_MISS = 0;
 int SPKF = 3100;
 int NPKF = 2900;
 int RR = 0;
@@ -35,7 +37,8 @@ void findPeak(int array[]) {
 			printf("Peak %d > Threshold1 %d\n", peak, THRESHOLD1);
 			}
 			RRCALC[0] = PeakIndex;
-			calcRR(RRCALC[0],RRCALC[1]);
+			printf("Peak = %d , RRCALC[0] = %d , RRCALC[1] = %d\n", peak, RRCALC[0], RRCALC[1]);
+			calcRR(RRCALC[1],RRCALC[0]);
 			RRCALC[1] = RRCALC[0];
 			//printf("%d\n", PEAKS[0]);
 		} else {
