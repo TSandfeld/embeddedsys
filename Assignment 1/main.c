@@ -9,7 +9,7 @@ int xRaw[13] = {0};
 int xLow[33] = {0};
 int xHigh[5] = {0};
 int xDer = 0;
-int xSqr[31] = {0};
+int xSqr[30] = {0};
 int xMWI = 0;
 int xPeak[3] = {0};
 
@@ -24,15 +24,15 @@ int main(int argc, char *argv[]) {
 			break;
 		} else {
 			xLow[0] = lowPassFilter(xRaw,xLow);
-			//printf("%d\n",xLow[0]);
+			//printf("%d\n",xLow[0]); //output korrekt
 			xHigh[0] = highPassFilter(xLow,xHigh);
-			//printf("%d\n",xHigh[0]);
+			//printf("%d\n",xHigh[0]); //output korrekt
 			xDer = derPassFilter(xHigh);
-			//printf("%d\n",xDer);
+			//printf("%d\n",xDer); //output korrekt
 			xSqr[0] = sqrPassFilter(xDer);
-			//printf("%d\n",xSqr[0]);
+			//printf("%d\n",xSqr[0]); //output korrekt
 			xMWI = mwiPassFilter(xSqr);
-			//printf("%d\n",xMWI);
+			//printf("%d\n",xMWI); // Ikke korrekt
 			xPeak[0] = xMWI;
 			findPeak(xPeak);
 			shiftAll();
@@ -50,9 +50,9 @@ void shiftRight(int array[], int max){
 
 void shiftAll() {
 	shiftRight(xRaw,12);
-	shiftRight(xLow, 32);
+	shiftRight(xLow,32);
 	shiftRight(xHigh,4);
-	shiftRight(xSqr,30);
+	shiftRight(xSqr,29);
 	shiftRight(xPeak,2);
 }
 
