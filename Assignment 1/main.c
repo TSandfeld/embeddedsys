@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 			xSqr[0] = sqrPassFilter(xDer);
 			//printf("%d\n",xSqr[0]); //output korrekt
 			xMWI = mwiPassFilter(xSqr);
-			//printf("%d\n",xMWI); // Ikke korrekt
+			//printf("%d\n",xMWI); // output korrekt
 			xPeak[0] = xMWI;
 			findPeak(xPeak);
 			shiftAll();
