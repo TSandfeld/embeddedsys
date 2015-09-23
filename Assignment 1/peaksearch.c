@@ -22,8 +22,8 @@ int RR_MISS = 0;
 int SPKF = 0;
 int NPKF = 0;
 int RR = 0;
-int THRESHOLD1 = 0; //Valgt ud fra graf over MWI-punkter.
-int THRESHOLD2 = 0; //Threshold1 *0.5
+int THRESHOLD1 = 3000; //Valgt ud fra graf over MWI-punkter.
+int THRESHOLD2 = 1500; //Threshold1 *0.5
 int RPeaksCount, PeaksCount, PeakIndex = 0;
 
 void findPeak(int array[]) {
@@ -122,13 +122,13 @@ void findRRMiss() {
 	}
 }
 void addToRPeak(int number) { //Efter 200 rpeaks resettes counter, og der s�ttes ind fra plads 0.
-	/*
+
 	RPEAKS[0] = number;
 	for(int i = 9; i > 0; i--) {
 		RPEAKS[i] = RPEAKS[i-1];
 	}
 	printf("At index %d added RPEAK = %d\n", PeakIndex, number);
-	*/
+	/*
 
 	if(RPeaksCount >=10) {
 		RPeaksCount = 0;
@@ -136,18 +136,19 @@ void addToRPeak(int number) { //Efter 200 rpeaks resettes counter, og der s�tt
 	RPEAKS[RPeaksCount] = number;
 	printf("At index %d added RPEAK = %d\n", PeakIndex, number);
 	RPeaksCount++;
+	*/
 	if(debug == 1) {
 	printf("RPeaksCount = %d\n", RPeaksCount);
 	}
 
 }
 void addToPeaks(int number) {
-	/*
+
 	PEAKS[0] = number;
 	for(int i = 9; i > 0; i--) {
 		PEAKS[i] = PEAKS[i-1];
 	}
-	*/
+	/*
 
 	if(PeaksCount >= 10) {
 		PeaksCount = 0;
@@ -157,6 +158,7 @@ void addToPeaks(int number) {
 	if(debug == 1) {
 	printf("PeaksCount = %d\n", PeaksCount);
 	}
+	*/
 }
 void shiftBothRecent() {
 	if(debug == 1) {
@@ -226,11 +228,6 @@ void searchBack() {
 			shiftRecent();
 			RecentRR[0] = RR;
 			findAVG1();
-			/*
-			findRRLow();
-			findRRHigh();
-			findRRMiss();
-			*/
 			RR=0;
 			RR_LOW = 0.92*RR_AVERAGE1;
 			RR_HIGH = 1.16*RR_AVERAGE1;
