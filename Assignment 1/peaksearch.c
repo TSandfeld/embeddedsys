@@ -6,25 +6,27 @@ void findNPKF();
 void findThreshold1();
 void findThreshold2();
 void searchBack();
+void addMissCount();
 
 int debug = 0;
 
 int PEAKS[10] = {0}; //Valgt ud fra peak-data.
+int PeakIndex[10] = {0};
 int RPEAKS[10] = {0};
 int RRCALC[2] = {0};
-int RecentRR[8] = {0};
-int RecentRR_OK[8] = {0};
-int RR_AVERAGE1 = 0;
-int RR_AVERAGE2 = 0;
-int RR_LOW = 0;
-int RR_HIGH = 0;
-int RR_MISS = 0;
+int RecentRR[8] = {[0 ... 7] = 155};
+int RecentRR_OK[8] = {[0 ... 7] = 155};
+int RR_AVERAGE1 = 155;
+int RR_AVERAGE2 = 155;
+int RR_LOW = 0.92*155;
+int RR_HIGH = 1.16*155;
+int RR_MISS = 1.66*155;
 int SPKF = 0;
 int NPKF = 0;
 int RR = 0;
-int THRESHOLD1 = 3000; //Valgt ud fra graf over MWI-punkter.
-int THRESHOLD2 = 1500; //Threshold1 *0.5
-int RPeaksCount, PeaksCount, PeakIndex = 0;
+int THRESHOLD1 = 2000; //Valgt ud fra graf over MWI-punkter.
+int THRESHOLD2 = 1000; //Threshold1 *0.5
+int RPeaksCount, PeaksCount, DataIndex, RRMISSCount = 0;
 
 void findPeak(int array[]) {
 	if(array[0] < array[1] && array[1] > array[2]) {
@@ -37,13 +39,17 @@ void findPeak(int array[]) {
 		addToPeaks(peak);
 		if(peak > THRESHOLD1) {
 			//addToRPeak(peak);
+			//printf("Latest R-Peak detected was %d at time %.3f s\n", peak,  ((PeakIndex*4.0)/1000.0)+0.1875);
+			if(peak < 2000) {
+				//printf("WARNING: Significant pulse drop!");
+			}
 			if(debug == 1) {
 			printf("Peak %d > Threshold1 %d\n", peak, THRESHOLD1);
 			}
-			RRCALC[0] = PeakIndex;
-			//printf("Peak = %d , Index = %d\n", peak, RRCALC[0]);
+			RRCALC[0] = DataIndex;
+			//printf("Old index = %d, new index = %d\n", RRCALC[1], RRCALC[0]);
 			calcRR(RRCALC[1],RRCALC[0], peak);
-			RRCALC[1] = RRCALC[0];
+			//RRCALC[1] = RRCALC[0];
 			//printf("%d\n", PEAKS[0]);
 		} else {
 			//printf("For lavt peak = %d\n",peak);
@@ -52,7 +58,7 @@ void findPeak(int array[]) {
 			findThreshold2();
 		}
 	}
-	PeakIndex++;
+	DataIndex++;
 }
 
 void findThreshold1() {
@@ -122,12 +128,11 @@ void findRRMiss() {
 	}
 }
 void addToRPeak(int number) { //Efter 200 rpeaks resettes counter, og der s�ttes ind fra plads 0.
-
-	RPEAKS[0] = number;
 	for(int i = 9; i > 0; i--) {
 		RPEAKS[i] = RPEAKS[i-1];
 	}
-	printf("At index %d added RPEAK = %d\n", PeakIndex, number);
+	RPEAKS[0] = number;
+	printf("At index %d added RPEAK = %d\n", RRCALC[1], number);
 	/*
 
 	if(RPeaksCount >=10) {
@@ -143,11 +148,13 @@ void addToRPeak(int number) { //Efter 200 rpeaks resettes counter, og der s�tt
 
 }
 void addToPeaks(int number) {
-
-	PEAKS[0] = number;
 	for(int i = 9; i > 0; i--) {
 		PEAKS[i] = PEAKS[i-1];
+		PeakIndex[i] = PeakIndex[i-1];
 	}
+	PeakIndex[0] = DataIndex;
+		PEAKS[0] = number;
+
 	/*
 
 	if(PeaksCount >= 10) {
@@ -179,10 +186,12 @@ void shiftRecent() { //shifter kun recentRR!!!!
 }
 
 void calcRR(int t1, int t2, int peak) {
-	RR += t2-t1;
+	RR = t2-t1;
+	/*
 	if(RR < 0) {
 		RR = RR*-1;
 	}
+	*/
 	if(debug == 1) {
 	printf("\nEntering CalcRR\n");
 	printf("RR_LOW = %d < RR = %d < RR_HIGH = %d\n",RR_LOW, RR, RR_HIGH);
@@ -192,6 +201,8 @@ void calcRR(int t1, int t2, int peak) {
 		if(debug == 1) {
 		//printf("RR_LOW = %d < RR = %d < RR_HIGH = %d\n",RR_LOW, RR, RR_HIGH);
 		}
+		RRMISSCount = 0; //Resettes hvis RR ligger imellem low & high
+		RRCALC[1] = t2;
 		addToRPeak(peak);
 		findSPKF(peak);
 		if(debug == 1) {
@@ -208,34 +219,45 @@ void calcRR(int t1, int t2, int peak) {
 		findRRMiss();
 		findThreshold1();
 		findThreshold2();
-	} else if(RR > RR_MISS) {
-		searchBack();
+	}  else {
+		addMissCount();
+		if(RR > RR_MISS) {
+			searchBack();
+		}
 	}
 }
+
+void addMissCount() {
+	if(RRMISSCount >= 5) {
+		//printf("WARNING: Irregular heartbeat!\n");
+		RRMISSCount = 0;
+	}
+	RRMISSCount++;
+}
+
 void searchBack() {
 	if(debug == 1) {
 	printf("\nEntering SearchBack\n");
 	}
-
-	for(int i = 9; i >= 0; i--) {
+	for(int i = 1; i < 10; i++) {
 		int peak = PEAKS[i]; //debug purpose
-		int t = THRESHOLD2; //---"---
-		if(peak > t) {
+		if(peak > THRESHOLD2) {
 			//printf("Peak %d > thr %d\n", peak,t);
+			RRCALC[1] = PeakIndex[i];
 			addToRPeak(peak);
-			PEAKS[i] = -1; //Peaket skal fjernes fra PEAKS arrayet n�r den tilf�jes til RPeaks arrayet ellers kigges der p� den samme hele tiden.
+			//PEAKS[i] = -1; //Peaket skal fjernes fra PEAKS arrayet n�r den tilf�jes til RPeaks arrayet ellers kigges der p� den samme hele tiden.
 			SPKF = 0.25*peak+0.75*SPKF;
 			shiftRecent();
 			RecentRR[0] = RR;
+			int a = PeakIndex[i];
 			findAVG1();
-			RR=0;
+
 			RR_LOW = 0.92*RR_AVERAGE1;
 			RR_HIGH = 1.16*RR_AVERAGE1;
 			RR_MISS = 1.66*RR_AVERAGE1;
 			if(debug == 1) {
 				printf("Ny RR_LOW = %d\nNy RR_HIGH = %d\nNy RR_MISS = %d\n", RR_LOW, RR_HIGH, RR_MISS);
 			}
-
 			findThreshold1();
 			findThreshold2();
 			break;

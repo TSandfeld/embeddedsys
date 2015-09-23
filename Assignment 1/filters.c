@@ -1,4 +1,4 @@
-
+//Der gaar 187.5 ms før et datapunkt er igennem alle filtre
 int lowPassFilter(int xArr[], int yArr[]){
 	int y = 2 * yArr[1] - yArr[2] + (xArr[0] - 2 * xArr[6] + xArr[12])/32;
 	return y;
