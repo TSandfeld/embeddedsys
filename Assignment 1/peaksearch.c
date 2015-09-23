@@ -16,11 +16,11 @@ int RPEAKS[10] = {0};
 int RRCALC[2] = {0};
 int RecentRR[8] = {[0 ... 7] = 155};
 int RecentRR_OK[8] = {[0 ... 7] = 155};
-int RR_AVERAGE1 = 155;
-int RR_AVERAGE2 = 155;
-int RR_LOW = 0.92*155;
-int RR_HIGH = 1.16*155;
-int RR_MISS = 1.66*155;
+int RR_AVERAGE1 = 0;
+int RR_AVERAGE2 = 0;
+int RR_LOW = 0;
+int RR_HIGH = 0;
+int RR_MISS = 0;
 int SPKF = 0;
 int NPKF = 0;
 int RR = 0;
@@ -38,10 +38,9 @@ void findPeak(int array[]) {
 		int peak = array[1];
 		addToPeaks(peak);
 		if(peak > THRESHOLD1) {
-			//addToRPeak(peak);
-			//printf("Latest R-Peak detected was %d at time %.3f s\n", peak,  ((PeakIndex*4.0)/1000.0)+0.1875);
+			printf("Latest R-Peak detected was %d at time %.3f s\n", peak,  ((DataIndex*4.0)/1000.0)+0.1875);
 			if(peak < 2000) {
-				//printf("WARNING: Significant pulse drop!");
+				printf("WARNING: Significant pulse drop!\n");
 			}
 			if(debug == 1) {
 			printf("Peak %d > Threshold1 %d\n", peak, THRESHOLD1);
@@ -132,7 +131,7 @@ void addToRPeak(int number) { //Efter 200 rpeaks resettes counter, og der s�tt
 		RPEAKS[i] = RPEAKS[i-1];
 	}
 	RPEAKS[0] = number;
-	printf("At index %d added RPEAK = %d\n", RRCALC[1], number);
+	//printf("At index %d added RPEAK = %d\n", RRCALC[1], number);
 	/*
 
 	if(RPeaksCount >=10) {
@@ -220,6 +219,7 @@ void calcRR(int t1, int t2, int peak) {
 		findThreshold1();
 		findThreshold2();
 	}  else {
+		//printf("Else\n");
 		addMissCount();
 		if(RR > RR_MISS) {
 			searchBack();
@@ -229,7 +229,7 @@ void calcRR(int t1, int t2, int peak) {
 
 void addMissCount() {
 	if(RRMISSCount >= 5) {
-		//printf("WARNING: Irregular heartbeat!\n");
+		printf("WARNING: Irregular heartbeat!\n");
 		RRMISSCount = 0;
 	}
 	RRMISSCount++;
@@ -249,7 +249,6 @@ void searchBack() {
 			SPKF = 0.25*peak+0.75*SPKF;
 			shiftRecent();
 			RecentRR[0] = RR;
-			int a = PeakIndex[i];
 			findAVG1();
 
 			RR_LOW = 0.92*RR_AVERAGE1;
