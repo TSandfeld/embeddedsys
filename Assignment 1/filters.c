@@ -1,11 +1,11 @@
-
+//Der gaar 187.5 ms før et datapunkt er igennem alle filtre
 int lowPassFilter(int xArr[], int yArr[]){
-	int y = 2*yArr[1]-yArr[2] + (xArr[0]-2*xArr[6]+xArr[12])/32;
+	int y = 2 * yArr[1] - yArr[2] + (xArr[0] - 2 * xArr[6] + xArr[12])/32;
 	return y;
 }
 
 int highPassFilter(int xArr[], int yArr[]) {
-	int y = yArr[1]-(xArr[0]/32)+xArr[16]-xArr[17]+(xArr[32]/32);
+	int y = yArr[1] - xArr[0]/32 + xArr[16] - xArr[17] + xArr[32]/32;
 	return y;
 }
 
@@ -20,9 +20,9 @@ int sqrPassFilter(int xArr) {
 }
 
 int mwiPassFilter(int xArr[]) {
-	int y;
-	for(int i = 0; i<31; i++) {
-		y += xArr[i];
+	int y = 0;
+	for(int i = 0; i<30; i++) {
+		y += xArr[i]/30;
 	}
-	return y/30;
+	return y;
 }
