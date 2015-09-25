@@ -39,7 +39,7 @@ void findPeak(int array[]) {
 		addToPeaks(peak);
 		if(peak > THRESHOLD1) {
 			printf("Latest R-Peak detected was %d at time %.3f s\n", peak,  ((DataIndex*4.0)/1000.0)+0.1875);
-			printf("Current pulse is: %.2f\n",60*PulseCount/(((DataIndex*4.0)/1000.0)+0.1875));
+			printf("Current pulse is: %.3f\n",60*PulseCount/(((DataIndex*4.0)/1000.0)+0.1875));
 			if(peak < 2000) {
 				printf("WARNING: Significant pulse drop!\n");
 			}
