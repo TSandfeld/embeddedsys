@@ -26,7 +26,7 @@ int NPKF = 0;
 int RR = 0;
 int THRESHOLD1 = 2000; //Valgt ud fra graf over MWI-punkter.
 int THRESHOLD2 = 1000; //Threshold1 *0.5
-int RPeaksCount, PeaksCount, DataIndex, RRMISSCount = 0;
+int RPeaksCount, PeaksCount, DataIndex, RRMISSCount, PulseCount = 0;
 
 void findPeak(int array[]) {
 	if(array[0] < array[1] && array[1] > array[2]) {
@@ -39,6 +39,7 @@ void findPeak(int array[]) {
 		addToPeaks(peak);
 		if(peak > THRESHOLD1) {
 			printf("Latest R-Peak detected was %d at time %.3f s\n", peak,  ((DataIndex*4.0)/1000.0)+0.1875);
+			printf("Current pulse is: %.2f\n",60*PulseCount/(((DataIndex*4.0)/1000.0)+0.1875));
 			if(peak < 2000) {
 				printf("WARNING: Significant pulse drop!\n");
 			}
@@ -131,6 +132,7 @@ void addToRPeak(int number) { //Efter 200 rpeaks resettes counter, og der s�tt
 		RPEAKS[i] = RPEAKS[i-1];
 	}
 	RPEAKS[0] = number;
+	PulseCount++;
 	//printf("At index %d added RPEAK = %d\n", RRCALC[1], number);
 	/*
 

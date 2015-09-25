@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include "sensor.h"
 #include "filters.h"
@@ -14,7 +15,7 @@ int xMWI = 0;
 int xPeak[3] = {0};
 
 int main(int argc, char *argv[]) {
-	static const char filename[] = "ECG.txt";
+	static const char filename[] = "ECG900K.txt";
 	FILE *file = fopen(filename,"r");
 	int flag = 0;
 	while(flag != 1) {
