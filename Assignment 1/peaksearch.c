@@ -31,7 +31,7 @@ void findPeak(int *array) {
 			newRPeak = DataIndex;
 			calcRR(oldRPeak,newRPeak, peak);
 		} else {
-			findNPKF(peak);
+			NPKF = 0.125*peak + 0.875*NPKF;
 			findThreshold1();
 			findThreshold2();
 		}
@@ -46,12 +46,7 @@ void findThreshold1() {
 void findThreshold2() {
 	THRESHOLD2 = 0.5*THRESHOLD1;
 }
-void findSPKF(int x) {
-	SPKF = 0.125 * x +0.875*SPKF;
-}
-void findNPKF(int x) {
-	NPKF = 0.125*x + 0.875*NPKF;
-}
+
 void findAVG1() {
 	int sum = 0;
 	for(int i = 0; i < 8; i++) {
@@ -67,15 +62,6 @@ void findAVG2() {
 	RR_AVERAGE2 = sum;
 }
 
-void findRRLow() {
-	RR_LOW = 0.92*RR_AVERAGE2;
-}
-void findRRHigh() {
-	RR_HIGH = 1.16*RR_AVERAGE2;
-}
-void findRRMiss() {
-	RR_MISS = 1.66*RR_AVERAGE2;
-}
 void addToRPeak(int peak) { //Efter 200 rpeaks resettes counter, og der s�ttes ind fra plads 0.
 	printf("Latest R-Peak detected was %d at time %.3f s\n", peak,  ((DataIndex*4.0)/1000.0)+0.1875);
 	printf("Current pulse is: %.3f\n",60*PulseCount/(((DataIndex*4.0)/1000.0)+0.1875));
@@ -86,20 +72,23 @@ void addToRPeak(int peak) { //Efter 200 rpeaks resettes counter, og der s�ttes
 	PulseCount++;
 	//printf("At index %d added RPEAK = %d\n", oldRPeak, peak);
 }
-void addToPeaks(int number) {
+
+void addToPeaks(int peak) {
 	for(int i = 9; i > 0; i--) {
 		PEAKS[i] = PEAKS[i-1];
 		PeakIndex[i] = PeakIndex[i-1];
 	}
 	PeakIndex[0] = DataIndex;
-	PEAKS[0] = number;
+	PEAKS[0] = peak;
 }
+
 void shiftBothRecent() {
 	for(int i = 7; i > 0; i--) {
 		RecentRR[i] = RecentRR[i-1];
 		RecentRR_OK[i] = RecentRR_OK[i-1];
 	}
 }
+
 void shiftRecent() { //shifter kun recentRR!
 	for(int i = 7; i > 0; i--) {
 		RecentRR[i] = RecentRR[i-1];
@@ -113,7 +102,7 @@ void calcRR(int t1, int t2, int peak) {
 		oldRPeak = t2;
 
 		addToRPeak(peak);
-		findSPKF(peak);
+		SPKF = 0.125 * peak +0.875*SPKF;
 		shiftBothRecent();
 		RecentRR_OK[0] = RR;
 		RecentRR[0] = RR;
@@ -121,9 +110,9 @@ void calcRR(int t1, int t2, int peak) {
 
 		findAVG2();
 		findAVG1();
-		findRRLow();
-		findRRHigh();
-		findRRMiss();
+		RR_LOW = 0.92*RR_AVERAGE2;
+		RR_HIGH = 1.16*RR_AVERAGE2;
+		RR_MISS = 1.66*RR_AVERAGE2;
 		findThreshold1();
 		findThreshold2();
 	}  else {
