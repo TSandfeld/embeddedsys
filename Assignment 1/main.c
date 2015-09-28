@@ -15,7 +15,7 @@ int xMWI = 0;
 int xPeak[3] = {0};
 
 int main(int argc, char *argv[]) {
-	static const char filename[] = "ECG.txt";
+	static const char filename[] = "ECG2700K.txt";
 	FILE *file = fopen(filename,"r");
 	int flag = 0;
 	while(flag != 1) {
@@ -25,15 +25,10 @@ int main(int argc, char *argv[]) {
 			break;
 		} else {
 			xLow[0] = lowPassFilter(xRaw,xLow);
-			//printf("%d\n",xLow[0]); //output korrekt
 			xHigh[0] = highPassFilter(xLow,xHigh);
-			//printf("%d\n",xHigh[0]); //output korrekt
 			xDer = derPassFilter(xHigh);
-			//printf("%d\n",xDer); //output korrekt
 			xSqr[0] = sqrPassFilter(xDer);
-			//printf("%d\n",xSqr[0]); //output korrekt
 			xMWI = mwiPassFilter(xSqr);
-			//printf("%d\n",xMWI); // output korrekt
 			xPeak[0] = xMWI;
 			findPeak(xPeak);
 			shiftAll();
@@ -42,7 +37,7 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 
-void shiftRight(int array[], int max){
+void shiftRight(int *array, int max){
 	for(int i = max; i > 0 ; i--) {
 		array[i] = array[i-1];
 
